@@ -1,0 +1,32 @@
+# --- Obsidian: ignore volatile local state + per-install secrets, keep shared config/plugins ---
+docs/.obsidian/workspace.json
+docs/.obsidian/workspace-mobile.json
+docs/.obsidian/cache/
+docs/.obsidian/plugins/*/data.json
+docs/.smart-env/
+.trash/
+docs/.trash/
+
+# --- Next.js / Node (for the app you build from these specs) ---
+node_modules/
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+.vercel
+
+# --- Env / secrets ---
+.env
+.env*.local
+
+# --- Supabase ---
+**/supabase/.branches/
+**/supabase/.temp/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+
+# --- transient screenshots ---
+/image.png

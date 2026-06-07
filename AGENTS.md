@@ -1,0 +1,96 @@
+# AGENTS.md
+
+Durable context for any AI coding agent working in this repo.
+
+## What this repo is
+A workspace where **specs are authored as markdown in `docs/`** (an Obsidian vault)
+and then built into apps. Specs are the source of truth — build from them, don't
+invent requirements.
+
+## Tech stack (target for apps built here)
+- **Frontend / fullstack:** Next.js (App Router, TypeScript)
+- **Backend / DB:** Supabase — Postgres, Auth, Storage
+- **Hosting:** Vercel
+
+## Where the specs live
+- `docs/01-Projects/<app-name>/` — one folder per app:
+  - `index.md` — Map of Content (links to every doc for that app)
+  - `prd.md` — product requirements
+  - `db-schema.md` — **the Supabase data model** (Mermaid `erDiagram` + RLS + indexes)
+  - `specs/<feature>.md` — individual feature specs
+- `docs/Templates/` — the canonical skeletons. Don't edit generated specs to match
+  code; edit the spec, then rebuild.
+
+## How to read a spec before building
+1. Only build specs whose frontmatter says `status: approved`. `draft` = ignore.
+2. The `db-schema.md` Mermaid `erDiagram` + RLS/index prose defines exactly which
+   Supabase tables, columns, foreign keys, and policies to create. Generate
+   migrations to match it.
+3. Each feature spec's **Acceptance Criteria** (Given/When/Then) is the test spec —
+   implement until every criterion passes, including the error/edge branches.
+4. Cross-doc links are **relative Markdown links** (`./db-schema.md`) — follow them.
+
+## Supabase conventions
+- Use Supabase Auth — do not hand-roll auth.
+- Enable RLS on every table; implement the policies named in `db-schema.md`.
+- Keep secrets in `.env.local` (gitignored); never commit keys.
+- Use `@supabase/ssr` for server/client separation in the App Router.
+
+## Next.js conventions
+- App Router. Server Components for data fetching by default; Client Components
+  only for interactivity (`"use client"`).
+- Keep the Supabase server client out of Client Components.
+
+## Build / test commands
+<!-- Fill these in once the Next.js app is scaffolded. Example: -->
+- Install: `npm install`
+- Dev: `npm run dev`
+- Test: `npm test`
+- Lint/typecheck: `npm run lint` / `npx tsc --noEmit`
+
+## gstack (skills & web browsing)
+This repo's agents use [gstack](https://github.com/garrytan/gstack). Install it with:
+`git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && cd ~/.claude/skills/gstack && ./setup`
+
+Use the `/browse` skill from gstack for all web browsing. Never use `mcp__claude-in-chrome__*` tools.
+
+Available gstack skills:
+
+- `/office-hours`
+- `/plan-ceo-review`
+- `/plan-eng-review`
+- `/plan-design-review`
+- `/design-consultation`
+- `/design-shotgun`
+- `/design-html`
+- `/review`
+- `/ship`
+- `/land-and-deploy`
+- `/canary`
+- `/benchmark`
+- `/browse`
+- `/connect-chrome`
+- `/qa`
+- `/qa-only`
+- `/design-review`
+- `/setup-browser-cookies`
+- `/setup-deploy`
+- `/setup-gbrain`
+- `/retro`
+- `/investigate`
+- `/document-release`
+- `/document-generate`
+- `/codex`
+- `/cso`
+- `/autoplan`
+- `/plan-devex-review`
+- `/devex-review`
+- `/careful`
+- `/freeze`
+- `/guard`
+- `/unfreeze`
+- `/gstack-upgrade`
+- `/learn`
+
+## Do not touch
+- `docs/.obsidian/` — Obsidian's own config.

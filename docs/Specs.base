@@ -1,0 +1,35 @@
+filters:
+  or:
+    - type == "spec"
+    - type == "prd"
+    - type == "feature"
+properties:
+  status:
+    displayName: Status
+  app:
+    displayName: App
+  priority:
+    displayName: Priority
+  area:
+    displayName: Area
+views:
+  - type: table
+    name: All specs
+    order:
+      - file.name
+      - app
+      - status
+      - priority
+      - area
+    groupBy:
+      property: app
+      direction: ASC
+  - type: table
+    name: Ready to build
+    filters:
+      and:
+        - status == "approved"
+    order:
+      - file.name
+      - app
+      - priority

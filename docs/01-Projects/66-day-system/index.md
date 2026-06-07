@@ -36,7 +36,14 @@ Draft 3 ─┘
 
 ## 🛠️ When building from this
 
-The 66-Day system is the methodology to implement (this is a Next.js + Supabase project). Until a software spec exists, treat `66-day-system.md` as the product source of truth — its **Appendix B templates** (daily captures, night session, weekly review, prediction log with Brier scoring) define the core data the app must support. Add a `prd.md` and `db-schema.md` here (from `../../Templates/`) when ready to scope the app.
+The 66-Day system is the methodology to implement (this is a Next.js + Supabase project). The
+canonical `66-day-system.md` is the product source of truth — its **Appendix B templates** (daily
+captures, night session, weekly review, prediction log with Brier scoring) define the core data the
+app supports.
+
+**The app is built.** It lives at the repo root — see the top-level [`README.md`](../../../README.md)
+for the run guide, and **[`db-schema.md`](./db-schema.md)** (`status: approved`) for the Supabase data
+model that `supabase/migrations/0001_init.sql` implements.
 
 ## 📝 File rename map (from the original root files)
 

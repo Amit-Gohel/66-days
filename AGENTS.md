@@ -41,12 +41,26 @@ invent requirements.
   only for interactivity (`"use client"`).
 - Keep the Supabase server client out of Client Components.
 
+## The app (built)
+The **66-Day System** app is scaffolded at the repo root (Next.js 16 App Router + Supabase).
+See [`README.md`](README.md) for the full run guide and structure. Source of truth for the
+data model is [`docs/01-Projects/66-day-system/db-schema.md`](docs/01-Projects/66-day-system/db-schema.md),
+implemented by `supabase/migrations/0001_init.sql`.
+
 ## Build / test commands
-<!-- Fill these in once the Next.js app is scaffolded. Example: -->
 - Install: `npm install`
-- Dev: `npm run dev`
-- Test: `npm test`
-- Lint/typecheck: `npm run lint` / `npx tsc --noEmit`
+- Local Supabase (Docker): `supabase start`, then `supabase db reset` to apply migrations
+- Dev: `npm run dev` (http://localhost:3000)
+- Build: `npm run build` · Serve: `npm run start`
+- Lint: `npm run lint` · Typecheck: `npm run typecheck` (`tsc --noEmit`)
+- No unit-test runner is configured yet; verify by running the app + `npm run build`.
+
+### Conventions to keep
+- Next.js 16 renamed `middleware.ts` → **`proxy.ts`** (root). Auth/session refresh lives there.
+- Use `supabase.auth.getClaims()` (never `getSession()`) in server/proxy code.
+- ESLint uses Next 16's **native flat configs** (`eslint-config-next/core-web-vitals` + `/typescript`);
+  do NOT switch to `FlatCompat` (it hits a circular-config crash under ESLint 9/10).
+- Pure domain logic (day/phase/streak/Brier) lives in `lib/domain/` and is fed DB rows by `lib/queries/`.
 
 ## gstack (skills & web browsing)
 This repo's agents use [gstack](https://github.com/garrytan/gstack). Install it with:

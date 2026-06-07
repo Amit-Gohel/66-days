@@ -30,3 +30,5 @@ Thumbs.db
 
 # --- transient screenshots ---
 /image.png
+/tmp
+.gstack/

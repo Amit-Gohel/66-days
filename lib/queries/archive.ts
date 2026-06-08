@@ -3,6 +3,7 @@ import { getProfile } from "./profile";
 import { todayInTz, dayNumber, addDays } from "@/lib/domain/dates";
 import { phaseForDay } from "@/lib/domain/phases";
 import { buildHeatmap } from "@/lib/domain/streak";
+import { freezesEarned } from "@/lib/domain/gamification";
 import type { DayEntry, NightSession, HeatCell } from "@/lib/types";
 
 export interface TimelineItem {
@@ -33,12 +34,14 @@ export async function getArchive(): Promise<ArchiveData> {
   const today = todayInTz(tz);
   const day = dayNumber(startDate, today);
 
-  const [entriesRes, nightsRes] = await Promise.all([
+  const [entriesRes, nightsRes, weeklyRes] = await Promise.all([
     supabase.from("day_entries").select("*").order("entry_date", { ascending: false }),
     supabase.from("night_sessions").select("*").order("entry_date", { ascending: false }),
+    supabase.from("weekly_reviews").select("id"),
   ]);
   const entries = (entriesRes.data as DayEntry[] | null) ?? [];
   const nights = (nightsRes.data as NightSession[] | null) ?? [];
+  const freezes = freezesEarned((weeklyRes.data as { id: string }[] | null)?.length ?? 0);
 
   const dn = (d: string) => (startDate ? dayNumber(startDate, d) : 0);
   const completed = new Set<number>();
@@ -71,7 +74,7 @@ export async function getArchive(): Promise<ArchiveData> {
     phase: phaseForDay(day),
     totalWords,
     timeline,
-    heatmap: buildHeatmap(day, completed),
+    heatmap: buildHeatmap(day, completed, new Set(), freezes),
     recall7: recall7Entry?.d1_anomaly ?? null,
   };
 }

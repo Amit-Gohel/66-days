@@ -3,6 +3,7 @@ import { getProfile } from "./profile";
 import { todayInTz, dayNumber } from "@/lib/domain/dates";
 import { phaseForDay } from "@/lib/domain/phases";
 import { buildHeatmap } from "@/lib/domain/streak";
+import { freezesEarned } from "@/lib/domain/gamification";
 import {
   calibrationBins,
   brierByWeek,
@@ -36,14 +37,16 @@ export async function getCalibration(): Promise<CalibrationData> {
   const day = dayNumber(startDate, today);
   const phase = phaseForDay(day);
 
-  const [predRes, nightRes, entryRes] = await Promise.all([
+  const [predRes, nightRes, entryRes, weeklyRes] = await Promise.all([
     supabase.from("predictions").select("*").eq("status", "resolved"),
     supabase.from("night_sessions").select("entry_date,n1_miss_rate,completed_at"),
     supabase.from("day_entries").select("entry_date"),
+    supabase.from("weekly_reviews").select("id"),
   ]);
   const resolved = (predRes.data as Prediction[] | null) ?? [];
   const nights = (nightRes.data as { entry_date: string; n1_miss_rate: number | null; completed_at: string | null }[] | null) ?? [];
   const entries = (entryRes.data as { entry_date: string }[] | null) ?? [];
+  const freezes = freezesEarned((weeklyRes.data as { id: string }[] | null)?.length ?? 0);
 
   const completed = new Set<number>();
   for (const e of entries) {
@@ -66,6 +69,6 @@ export async function getCalibration(): Promise<CalibrationData> {
     brierTrend: brierByWeek(resolved, startDate),
     missTrend: missRateByWeek(nights, startDate),
     note: confidenceNote(bins),
-    heatmap: buildHeatmap(day, completed),
+    heatmap: buildHeatmap(day, completed, new Set(), freezes),
   };
 }

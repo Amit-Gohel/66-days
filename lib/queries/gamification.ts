@@ -34,6 +34,8 @@ export async function loadGameStats(): Promise<{
   stats: GameStats;
   freezesAvailable: number;
   todayISO: string;
+  leaderboardOptIn: boolean;
+  displayName: string | null;
 }> {
   const supabase = await createClient();
   const profile = await getProfile();
@@ -107,7 +109,13 @@ export async function loadGameStats(): Promise<{
     recoveredFromMiss: streak >= 1 && missedPastDay,
   };
 
-  return { stats, freezesAvailable: freezesLeft, todayISO };
+  return {
+    stats,
+    freezesAvailable: freezesLeft,
+    todayISO,
+    leaderboardOptIn: profile?.show_on_leaderboard ?? false,
+    displayName: profile?.display_name ?? null,
+  };
 }
 
 export interface BadgeView {
@@ -129,12 +137,13 @@ export interface GameState {
   badges: BadgeView[];
   unlockedCount: number;
   totalBadges: number;
+  leaderboardOptIn: boolean;
 }
 
 /** The full gamification view-model for the home page (read-only). */
 export async function getGameState(): Promise<GameState> {
   const supabase = await createClient();
-  const [{ stats, freezesAvailable }, achRes] = await Promise.all([
+  const [{ stats, freezesAvailable, leaderboardOptIn }, achRes] = await Promise.all([
     loadGameStats(),
     supabase.from("achievements").select("key, unlocked_on"),
   ]);
@@ -167,5 +176,6 @@ export async function getGameState(): Promise<GameState> {
     badges,
     unlockedCount: badges.filter((b) => b.unlocked).length,
     totalBadges: badges.length,
+    leaderboardOptIn,
   };
 }

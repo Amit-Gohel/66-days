@@ -140,7 +140,7 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <GameSync />
+      <GameSync leaderboardOptIn={game.leaderboardOptIn} />
     </div>
   );
 }

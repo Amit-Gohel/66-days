@@ -165,6 +165,39 @@ erDiagram
   core tables). Index `achievements(user_id)`.
 - **Rows are append-mostly:** inserted once when a milestone is first reached (idempotent via the unique
   constraint) and never deleted by the app (removing earned rewards harms via loss aversion).
-- **Tier 2 (social, not yet migrated):** `profiles.display_name` + `profiles.show_on_leaderboard`
-  (opt-in), a `buddy_connections` table, and a `SECURITY DEFINER` `leaderboard_week()` RPC that exposes
-  only opted-in users' display name + weekly CP. See the spec.
+## Gamification additions — Tier 2 (`0003_social.sql`)
+
+Opt-in social, all default-off. No table or function ever exposes journal content — only a chosen
+display name, derived Craft Points, and streak numbers.
+
+```mermaid
+erDiagram
+  AUTH_USERS ||--|| leaderboard_entries : "opt-in projection"
+  AUTH_USERS ||--o{ buddy_connections : "requester / addressee"
+  leaderboard_entries {
+    uuid user_id PK "= auth.users.id; row exists only while opted in"
+    text display_name
+    int points "derived Craft Points (computed in TS, upserted)"
+    int streak
+    timestamptz updated_at
+  }
+  buddy_connections {
+    uuid id PK
+    uuid requester_id FK
+    uuid addressee_id FK
+    text status "ck pending|accepted|declined|ended"
+    timestamptz responded_at
+  }
+```
+
+- **`profiles`** gains `display_name text` + `show_on_leaderboard boolean default false` (opt-in).
+- **`leaderboard_entries`** RLS: `select` for any signed-in user (rows exist only for opted-in users);
+  `insert/update/delete` own row only. Index `(points desc)`; `updated_at` trigger.
+- **`buddy_connections`** RLS: `select/update/delete` where `auth.uid() in (requester_id, addressee_id)`;
+  `insert` only as the requester. `unique(requester_id, addressee_id)`, `check(requester_id <> addressee_id)`.
+- **`buddy_summary()`** (SECURITY DEFINER) — the caller's pending/accepted connections with the other
+  party's `display_name` resolved. **`buddy_completion_dates(p_buddy uuid)`** (SECURITY DEFINER) — the
+  *dates* a buddy completed (never content), only when an accepted connection exists. Both `grant`ed to
+  `authenticated` and gated on `auth.uid()`.
+- **Derived in TypeScript:** leaderboard points (`craftPoints`), the cooperative `sharedStreak`. See
+  [`specs/gamification.md`](./specs/gamification.md).

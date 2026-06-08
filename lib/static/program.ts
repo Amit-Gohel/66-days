@@ -20,6 +20,7 @@ export const NAV: NavItem[] = [
   { id: "archive", label: "Archive", icon: "archive", href: "/archive" },
   { id: "reading", label: "Reading", icon: "book", href: "/reading" },
   { id: "roadmap", label: "Roadmap", icon: "map", href: "/roadmap" },
+  { id: "leaderboard", label: "Cohort", icon: "award", href: "/leaderboard" },
   { id: "settings", label: "Settings", icon: "settings", href: "/settings" },
 ];
 

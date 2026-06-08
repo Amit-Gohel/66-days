@@ -14,6 +14,8 @@
 // Everything here is a pure function of already-stored data — no DB access, no Date.now,
 // no side effects — so it is trivially testable and can never be gamed.
 
+import { addDays } from "./dates";
+
 /** The denormalised stats the point/badge rules read. Built in lib/queries/gamification.ts. */
 export interface GameStats {
   day: number; // current 1-based program day
@@ -140,4 +142,30 @@ export function evaluateAchievements(s: GameStats): string[] {
 /** Look up a badge definition by key (for celebration toasts). */
 export function badgeByKey(key: string): BadgeDef | undefined {
   return ACHIEVEMENTS.find((b) => b.key === key);
+}
+
+// ── Cooperative buddy streak (Tier 2) ─────────────────────────────────────--
+/**
+ * The "team streak" for a buddy pair: the run of consecutive calendar days, ending
+ * today (or yesterday if today isn't done yet — today is never penalised), on which
+ * BOTH people showed up. Cooperative and low-stakes by design — it celebrates shared
+ * days, it never frames a gap as letting your buddy down (designs around guilt, F3).
+ *
+ * @param mine   set of YYYY-MM-DD dates the user completed
+ * @param theirs set of YYYY-MM-DD dates the buddy completed
+ */
+export function sharedStreak(
+  mine: Set<string>,
+  theirs: Set<string>,
+  todayISO: string,
+): number {
+  const both = (d: string) => mine.has(d) && theirs.has(d);
+  let cursor = todayISO;
+  if (!both(cursor)) cursor = addDays(cursor, -1); // today still in progress — start at yesterday
+  let streak = 0;
+  while (both(cursor)) {
+    streak++;
+    cursor = addDays(cursor, -1);
+  }
+  return streak;
 }

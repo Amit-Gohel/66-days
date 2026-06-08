@@ -8,6 +8,7 @@ import {
   FREEZE_CAP,
   evaluateAchievements,
   badgeByKey,
+  sharedStreak,
   ACHIEVEMENTS,
   type GameStats,
 } from "./gamification";
@@ -158,5 +159,32 @@ describe("badge catalogue integrity", () => {
   it("badgeByKey round-trips", () => {
     expect(badgeByKey("seven_days")?.name).toBe("Seven Days In");
     expect(badgeByKey("nope")).toBeUndefined();
+  });
+});
+
+describe("sharedStreak (cooperative buddy streak)", () => {
+  const days = (...d: string[]) => new Set(d);
+
+  it("counts consecutive days both completed, ending today", () => {
+    const mine = days("2026-06-06", "2026-06-07", "2026-06-08");
+    const theirs = days("2026-06-06", "2026-06-07", "2026-06-08");
+    expect(sharedStreak(mine, theirs, "2026-06-08")).toBe(3);
+  });
+
+  it("does not penalise today still being in progress (counts back from yesterday)", () => {
+    const mine = days("2026-06-06", "2026-06-07");
+    const theirs = days("2026-06-06", "2026-06-07");
+    // neither has 06-08 yet → streak counts the shared run ending yesterday
+    expect(sharedStreak(mine, theirs, "2026-06-08")).toBe(2);
+  });
+
+  it("breaks on the first day only one of them showed up", () => {
+    const mine = days("2026-06-06", "2026-06-07", "2026-06-08");
+    const theirs = days("2026-06-08"); // buddy missed 06-06 and 06-07
+    expect(sharedStreak(mine, theirs, "2026-06-08")).toBe(1);
+  });
+
+  it("is 0 when there is no shared recent day", () => {
+    expect(sharedStreak(days("2026-06-01"), days("2026-06-08"), "2026-06-08")).toBe(0);
   });
 });

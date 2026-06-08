@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { syncAchievements, type UnlockedBadge } from "@/lib/actions/gamification";
+import { refreshLeaderboardEntry } from "@/lib/actions/social";
 import { Icon } from "@/components/ui/Icon";
 
 /**
@@ -10,7 +11,7 @@ import { Icon } from "@/components/ui/Icon";
  * Calm and dismissible; no sound, and the entry animation is disabled under
  * prefers-reduced-motion (the .anim-up class is gated in globals.css).
  */
-export function GameSync() {
+export function GameSync({ leaderboardOptIn = false }: { leaderboardOptIn?: boolean }) {
   const ran = useRef(false);
   const [unlocked, setUnlocked] = useState<UnlockedBadge[]>([]);
 
@@ -24,7 +25,9 @@ export function GameSync() {
       .catch(() => {
         /* non-fatal: a failed sync just means no celebration this time */
       });
-  }, []);
+    // keep the user's public leaderboard row fresh (no-op unless they opted in)
+    if (leaderboardOptIn) refreshLeaderboardEntry().catch(() => {});
+  }, [leaderboardOptIn]);
 
   useEffect(() => {
     if (!unlocked.length) return;

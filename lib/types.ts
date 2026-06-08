@@ -21,6 +21,8 @@ export interface Profile {
   timezone: string;
   minimum_mode: boolean;
   onboarding_completed: boolean;
+  display_name: string | null;
+  show_on_leaderboard: boolean;
   created_at: string;
   updated_at: string;
 }

@@ -13,6 +13,10 @@ informed_by: gamification-research.md
 > [`gamification-research.md`](./gamification-research.md) so it never has to be re-gathered.
 > **Tier 1 (solo) is implemented** by `supabase/migrations/0002_gamification.sql` + `lib/domain/gamification.ts`
 > (+ tests), `lib/queries/gamification.ts`, `lib/actions/gamification.ts`, and `components/game/*`.
+> **Tier 2 (opt-in social) is implemented** by `supabase/migrations/0003_social.sql` (leaderboard_entries,
+> buddy_connections, two SECURITY DEFINER functions), `lib/queries/social.ts`, `lib/actions/social.ts`,
+> and `components/social/CohortView.tsx` at the `/leaderboard` route ("Cohort"). Both migrations must be
+> applied to Supabase.
 
 # 66-Day System — Gamification & Engagement (Healthy-by-Default)
 
@@ -146,17 +150,22 @@ and (b) doing nothing (leaves the verified competence/relatedness levers unused)
 6. **Engagement loop = the existing `habit_cue` (E13, d≈0.65) + one gentle, user-timed daily prompt
    + celebration.** **No variable-ratio rewards (F8), no spam, no urgency (F6).**
 
-### Social tier (Tier 2 — designed here, built only on request; privacy-sensitive)
+### Social tier (Tier 2 — BUILT; privacy-sensitive, opt-in)
 
-7. **Opt-in leaderboard** — **default OFF.** Privacy-safe: exposes only `display_name` + this week's
-   CP/streak for users who opted in; **never** entry content or email. Implemented via a
-   `SECURITY DEFINER` RPC (or RLS policy gated on `show_on_leaderboard = true`) so non-opted-in users
-   are invisible. **Constructive framing** (E7): small cohort, week-scoped, **no public demotion/
-   relegation drama** (answers F4). Competition is paired with the cooperative buddy feature, not
-   standalone.
-8. **Opt-in cooperative buddy streak** — **default OFF**, invite/accept. Shared streak = days *both*
-   completed, framed cooperatively ("you both showed up"), **no guilt/debt language** and easily
-   paused (answers F3). Builds relatedness (E7) without Snapchat-style obligation.
+7. **Opt-in leaderboard** — **default OFF.** Privacy-safe: exposes only `display_name` + total
+   CP/streak for users who opted in; **never** entry content or email. Implemented as a denormalised
+   `leaderboard_entries` projection — presence in the table *is* the opt-in (opting out deletes the
+   row), and CP is computed in TypeScript (single source of truth) and upserted, so the SQL never
+   duplicates the point weights. **Constructive framing** (E7): one global board, ranked by CP, **no
+   leagues, no demotion/relegation drama, no ranking notifications** (answers F4). *(Design note: total
+   CP rather than week-scoped — simpler and safe given the program is finite; weekly windowing is a
+   future option.)*
+8. **Opt-in cooperative buddy streak** — **default OFF**, invite-by-buddy-ID → accept. Shared streak =
+   consecutive calendar days *both* completed (`sharedStreak`), framed cooperatively ("you both showed
+   up"), **no guilt/debt language**, and either party can end it anytime (answers F3). A buddy can read
+   only the *dates* the other completed (via the `buddy_completion_dates` SECURITY DEFINER function,
+   gated on an accepted connection) — **never** journal content. Builds relatedness (E7) without
+   Snapchat-style obligation.
 
 ---
 
@@ -166,20 +175,36 @@ Additions to the schema in [`db-schema.md`](../db-schema.md). All new tables **R
 solo-tier tables are scoped to the owner exactly like the existing 8 tables. Social-tier objects
 deliberately allow *narrow, opt-in* cross-user reads and are documented as such.
 
-**Tier 1 (built):** only the `achievements` table is added — **streak freezes are DERIVED**
-(see below), so no `profiles` columns are needed for the solo tier. The social-tier `profiles`
-columns + `buddy_connections` ship with Tier 2.
+**Tier 1 (`0002`):** only the `achievements` table — **streak freezes are DERIVED** (see below), so no
+`profiles` columns are needed for the solo tier. **Tier 2 (`0003`):** two `profiles` opt-in columns,
+`leaderboard_entries` (a public projection — no journal content), `buddy_connections`, and two
+`SECURITY DEFINER` functions (`buddy_summary`, `buddy_completion_dates`).
 
 ```mermaid
 erDiagram
   AUTH_USERS ||--|| profiles : "1:1"
   AUTH_USERS ||--o{ achievements : earns
-  AUTH_USERS ||--o{ buddy_connections : "requester / addressee (Tier 2)"
+  AUTH_USERS ||--|| leaderboard_entries : "opt-in projection"
+  AUTH_USERS ||--o{ buddy_connections : "requester / addressee"
 
   profiles {
     uuid id PK "= auth.users.id"
     text display_name "Tier 2; shown on leaderboard/buddy only"
     bool show_on_leaderboard "Tier 2; default false (opt-in)"
+  }
+  leaderboard_entries {
+    uuid user_id PK "= auth.users.id; row exists only while opted in"
+    text display_name
+    int points "derived Craft Points (computed in TS)"
+    int streak
+    timestamptz updated_at
+  }
+  buddy_connections {
+    uuid id PK
+    uuid requester_id FK
+    uuid addressee_id FK
+    text status "ck pending|accepted|declined|ended; unique(requester,addressee)"
+    timestamptz responded_at
   }
   achievements {
     uuid id PK
@@ -288,10 +313,20 @@ covered for free by the existing grace, so freezes are never wasted.
 7. **Tests** (new Vitest setup — none exists today): `lib/domain/*.test.ts` for CP, achievement eval,
    freeze/streak logic (pure, fast, highest-value). Add `test` script to `package.json`.
 
-**Tier 2 — social (only on request):**
-8. Migration `0003_social.sql`: `buddy_connections` + RLS; `leaderboard_week()` `SECURITY DEFINER` RPC.
-9. Actions: buddy invite/accept/end; settings toggle for `show_on_leaderboard` + `display_name`.
-10. Components: `Leaderboard`, `BuddyStreak`; opt-in gates everywhere; privacy copy.
+**Tier 2 — social (BUILT):**
+8. ✅ Migration `0003_social.sql`: `profiles.display_name` + `show_on_leaderboard`; `leaderboard_entries`
+   (RLS: authed-read, own-write) + index + updated_at trigger; `buddy_connections` (RLS: party-only);
+   `buddy_summary()` + `buddy_completion_dates(uuid)` SECURITY DEFINER functions (granted to `authenticated`).
+9. ✅ `lib/queries/social.ts` (`getLeaderboard`, `getBuddies` with derived `sharedStreak`); `lib/actions/social.ts`
+   (`setLeaderboardOptIn`, `refreshLeaderboardEntry`, `sendBuddyRequest`, `respondBuddyRequest`, `endBuddy`);
+   `sharedStreak` added to `lib/domain/gamification.ts` (+ tests). Leaderboard auto-refreshes on home mount
+   via `GameSync` when opted in.
+10. ✅ `components/social/CohortView.tsx` at `/leaderboard` ("Cohort" nav item); opt-in gates everywhere,
+    cooperative copy, no relegation/guilt/notifications.
+
+**Known follow-ups:** the `/leaderboard` nav item is desktop-sidebar only (not in the 5-item mobile bottom
+tabs); leaderboard is total-CP (weekly windowing deferred); buddy invite is by raw buddy ID (a friendlier
+short code is a future nicety).
 
 **Mapping to the 5-min / 30–45-min cadence & phases:** 5-min captures → daily streak + small CP;
 night session → larger CP + depth badges; predictions/Brier → calibration badges; weekly review →

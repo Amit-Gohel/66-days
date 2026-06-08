@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { getDashboard } from "@/lib/queries/dashboard";
+import { getGameState } from "@/lib/queries/gamification";
 import { DayPhaseHeader } from "@/components/shell/DayPhaseHeader";
 import { TodayCaptures } from "@/components/home/TodayCaptures";
 import { StreakHeatmap } from "@/components/charts/StreakHeatmap";
+import { GameStatsCard } from "@/components/game/GameStatsCard";
+import { BadgeShelf } from "@/components/game/BadgeShelf";
+import { GameSync } from "@/components/game/GameSync";
 import { EvidenceChip } from "@/components/ui/EvidenceChip";
 import { Icon } from "@/components/ui/Icon";
 import { entryToValues, type CaptureKey } from "@/lib/static/capture-spec";
@@ -10,7 +14,10 @@ import { FEATURE_UNLOCK_DAY } from "@/lib/domain/phases";
 import { Day66Close } from "@/components/home/Day66Close";
 
 export default async function HomePage() {
-  const { app, captures, pagesFilled, drill, heatmap, todayEntry } = await getDashboard();
+  const [{ app, captures, pagesFilled, drill, heatmap, todayEntry }, game] = await Promise.all([
+    getDashboard(),
+    getGameState(),
+  ]);
   const sessionMin = app.phase === 1 ? "~5 min" : "~28–34 min";
 
   const prefill = Object.fromEntries(
@@ -110,6 +117,7 @@ export default async function HomePage() {
 
         {/* RIGHT: stats + heatmap */}
         <div className="space-y-4">
+          <GameStatsCard game={game} />
           <div className="hairline" style={{ borderRadius: 6, padding: "16px 18px", background: "var(--surface)" }}>
             <span className="f-mono" style={{ fontSize: 11, color: "var(--text-3)" }}>PAGES FILLED</span>
             <div className="mt-1 flex items-baseline gap-2">
@@ -128,8 +136,11 @@ export default async function HomePage() {
               <StreakHeatmap cells={heatmap} cell={22} />
             </div>
           </div>
+          <BadgeShelf badges={game.badges} />
         </div>
       </div>
+
+      <GameSync />
     </div>
   );
 }

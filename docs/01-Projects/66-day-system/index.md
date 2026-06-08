@@ -45,6 +45,17 @@ app supports.
 for the run guide, and **[`db-schema.md`](./db-schema.md)** (`status: approved`) for the Supabase data
 model that `supabase/migrations/0001_init.sql` implements.
 
+## 🧩 Feature specs (`specs/`)
+
+Specs for features layered on top of the core system. Read the spec before touching the feature.
+
+- **[`specs/gamification.md`](./specs/gamification.md)** — `status: approved`. Healthy-by-default
+  engagement layer: derived Craft Points, methodology-tied achievements, forgiving streaks with
+  *derived* freezes, opt-in social (Tier 2). **Tier 1 (solo) is implemented.**
+- **[`specs/gamification-research.md`](./specs/gamification-research.md)** — `status: reference`.
+  The verified evidence base behind the gamification design (SDT, Fogg, Lally, Hamari/Koivisto,
+  Sailer, goal-gradient + user-sentiment failure modes). **Read this instead of re-running the research.**
+
 ## 📝 File rename map (from the original root files)
 
 | Original file | Now |

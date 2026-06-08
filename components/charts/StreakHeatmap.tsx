@@ -6,6 +6,7 @@ import type { HeatCell, HeatState } from "@/lib/types";
 const COLOR: Record<HeatState, string> = {
   completed: "var(--heat-completed)",
   partial: "var(--heat-partial)",
+  frozen: "var(--heat-frozen)",
   "missed-once": "var(--heat-missed-once)",
   "missed-twice": "var(--heat-missed-twice)",
   future: "var(--heat-future)",
@@ -14,6 +15,7 @@ const COLOR: Record<HeatState, string> = {
 const LEGEND: [HeatState, string][] = [
   ["completed", "Completed"],
   ["partial", "Partial / min day"],
+  ["frozen", "Frozen (protected)"],
   ["missed-once", "Missed once"],
   ["missed-twice", "Reset (×2)"],
   ["future", "Upcoming"],
@@ -62,6 +64,17 @@ export function StreakHeatmap({
               {c.state === "missed-twice" && (
                 <svg viewBox="0 0 20 20" width="100%" height="100%" style={{ position: "absolute", inset: 0 }}>
                   <path d="M0 12 L8 4 M4 16 L16 4 M12 16 L20 8" stroke="var(--warn)" strokeWidth="1.4" opacity="0.7" />
+                </svg>
+              )}
+              {c.state === "frozen" && (
+                <svg viewBox="0 0 20 20" width="100%" height="100%" style={{ position: "absolute", inset: 0 }}>
+                  <path
+                    d="M10 4v12M4 10h12M6 6l8 8M14 6l-8 8"
+                    stroke="var(--bg)"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    opacity="0.85"
+                  />
                 </svg>
               )}
             </div>

@@ -140,3 +140,31 @@ enforce one day-entry / night-session per `(user_id, entry_date)` and one review
   the user's timezone), the "never miss twice" streak + heatmap, calibration bins, Brier/miss-rate
   weekly trends, idea-funnel counts. `day_number`/`phase` are also snapshotted onto rows at write time.
 - **Timezone:** `entry_date` and "today" are computed in the user's `profiles.timezone`, never server UTC.
+
+## Gamification additions — Tier 1 (`0002_gamification.sql`)
+
+Designed in [`specs/gamification.md`](./specs/gamification.md). The solo tier adds **one table**;
+Craft Points, ranks, and **streak freezes are all DERIVED** (in `lib/domain/gamification.ts`) — nothing
+else is stored, consistent with the rest of the app. Freezes = `min(2, weeklyReviewCount)` minus those
+consumed by the streak walk, so they are ungameable and can never become a paid "streak repair".
+
+```mermaid
+erDiagram
+  AUTH_USERS ||--o{ achievements : earns
+  achievements {
+    uuid id PK
+    uuid user_id FK
+    text key "stable badge id (owned by ACHIEVEMENTS in code); unique(user_id, key)"
+    date unlocked_on
+    bool seen "default false (for celebration toast)"
+    timestamptz created_at
+  }
+```
+
+- **RLS:** owner-only `select/insert/update/delete` where `auth.uid() = user_id` (same pattern as the
+  core tables). Index `achievements(user_id)`.
+- **Rows are append-mostly:** inserted once when a milestone is first reached (idempotent via the unique
+  constraint) and never deleted by the app (removing earned rewards harms via loss aversion).
+- **Tier 2 (social, not yet migrated):** `profiles.display_name` + `profiles.show_on_leaderboard`
+  (opt-in), a `buddy_connections` table, and a `SECURITY DEFINER` `leaderboard_week()` RPC that exposes
+  only opted-in users' display name + weekly CP. See the spec.

@@ -38,6 +38,16 @@ export function DayPhaseHeader({
             <Icon name="shield" size={14} /> grace
           </span>
         )}
+        {app.freezesAvailable > 0 && (
+          <span
+            className="f-mono inline-flex items-center gap-1"
+            style={{ fontSize: 12, color: "var(--text-2)" }}
+            title="Earned streak freezes — each covers a missed day so a long streak survives. Earned by weekly reviews, never purchasable."
+          >
+            <Icon name="snowflake" size={14} />
+            {app.freezesAvailable} {app.freezesAvailable === 1 ? "freeze" : "freezes"}
+          </span>
+        )}
         <span
           className="f-mono ml-auto"
           style={{ fontSize: 13, color: "var(--text-3)", whiteSpace: "nowrap" }}

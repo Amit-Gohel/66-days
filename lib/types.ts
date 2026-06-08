@@ -137,12 +137,23 @@ export interface Idea {
   updated_at: string;
 }
 
+/** A row in the achievements ledger (gamification Tier 1). */
+export interface Achievement {
+  id: string;
+  user_id: string;
+  key: string;
+  unlocked_on: string;
+  seen: boolean;
+  created_at: string;
+}
+
 /** Derived header/dashboard view-model passed into UI components. */
 export interface AppState {
   day: number;
   phase: number;
   streak: number;
   graceActive: boolean;
+  freezesAvailable: number;
   cue: string;
   email: string;
   theme: Theme;
@@ -152,6 +163,7 @@ export interface AppState {
 export type HeatState =
   | "completed"
   | "partial"
+  | "frozen"
   | "missed-once"
   | "missed-twice"
   | "future";

@@ -3,6 +3,7 @@ import { getClaimsUser, getProfile } from "./profile";
 import { todayInTz, dayNumber } from "@/lib/domain/dates";
 import { phaseForDay, FEATURE_UNLOCK_DAY, type Feature } from "@/lib/domain/phases";
 import { computeStreak, buildHeatmap } from "@/lib/domain/streak";
+import { freezesEarned } from "@/lib/domain/gamification";
 import { drillForDay, type Drill } from "@/lib/static/program";
 import type { AppState, DayEntry, HeatCell } from "@/lib/types";
 
@@ -42,12 +43,14 @@ export async function getDashboard(): Promise<Dashboard> {
   const day = dayNumber(startDate, todayISO);
   const phase = phaseForDay(day);
 
-  const [entriesRes, nightsRes] = await Promise.all([
+  const [entriesRes, nightsRes, weeklyRes] = await Promise.all([
     supabase.from("day_entries").select("*").order("entry_date", { ascending: true }),
     supabase.from("night_sessions").select("entry_date").not("completed_at", "is", null),
+    supabase.from("weekly_reviews").select("id"),
   ]);
   const entries = (entriesRes.data as DayEntry[] | null) ?? [];
   const nights = (nightsRes.data as { entry_date: string }[] | null) ?? [];
+  const weeklyReviewCount = (weeklyRes.data as { id: string }[] | null)?.length ?? 0;
 
   // A day counts toward the streak if the user showed up — captured OR ran the
   // night session that day.
@@ -80,13 +83,15 @@ export async function getDashboard(): Promise<Dashboard> {
   }
   const perDay = entries.length ? Math.round(totalWords / entries.length) : 0;
 
-  const { streak, graceActive } = computeStreak(day, completed);
+  const freezes = freezesEarned(weeklyReviewCount);
+  const { streak, graceActive, freezesLeft } = computeStreak(day, completed, freezes);
 
   const app: AppState = {
     day,
     phase,
     streak,
     graceActive,
+    freezesAvailable: freezesLeft,
     cue: profile?.habit_cue ?? "After I brush my teeth",
     email: user?.email ?? "",
     theme: profile?.theme ?? "dark",
@@ -95,7 +100,7 @@ export async function getDashboard(): Promise<Dashboard> {
 
   return {
     app,
-    heatmap: buildHeatmap(day, completed),
+    heatmap: buildHeatmap(day, completed, new Set(), freezes),
     captures,
     pagesFilled: { totalWords, perDay },
     drill: drillForDay(day),

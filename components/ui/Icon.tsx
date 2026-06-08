@@ -108,6 +108,13 @@ const PATHS: Record<string, ReactNode> = {
     </>
   ),
   list: <path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01" />,
+  snowflake: <path d="M12 2v20M2 12h20M5 5l14 14M19 5 5 19" />,
+  award: (
+    <>
+      <circle cx="12" cy="9" r="6" />
+      <path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5" />
+    </>
+  ),
 };
 
 export interface IconProps {

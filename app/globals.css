@@ -23,6 +23,7 @@
   --margin-rule: rgba(150, 70, 55, 0.28);
   --heat-completed: #9a6b34;
   --heat-partial: rgba(154, 107, 52, 0.5);
+  --heat-frozen: rgba(106, 142, 171, 0.5);
   --heat-missed-once: rgba(154, 107, 52, 0.28);
   --heat-missed-twice: rgba(138, 74, 60, 0.42);
   --heat-future: rgba(120, 90, 55, 0.1);
@@ -62,6 +63,7 @@
   --margin-rule: rgba(150, 70, 55, 0.3);
   --heat-completed: #d4a574;
   --heat-partial: rgba(212, 165, 116, 0.5);
+  --heat-frozen: rgba(140, 178, 214, 0.5);
   --heat-missed-once: rgba(212, 165, 116, 0.3);
   --heat-missed-twice: rgba(112, 67, 57, 0.4);
   --heat-future: #2a241b;

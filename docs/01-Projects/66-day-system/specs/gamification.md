@@ -41,12 +41,12 @@ side of it. We keep that philosophy and make it the spine of the whole system.
 
 ## 1. Research synthesis
 
-Two research passes were run. **Pass A (theory/evidence)** completed and was adversarially
-verified (25 claims, 0 refuted). **Pass B (real user sentiment + dark-pattern/addiction
-risk)** was **halted early to conserve budget** — its sources were fetched but not all
-individually verified, so Part B items are labelled `[User-reported]` / `[Practitioner-endorsed]`
-and flagged as *not adversarially verified*. Treat Part A as high-confidence and Part B as
-directional. Evidence labels follow the canonical doc's convention.
+Two research passes were run, **both now adversarially verified.** **Pass A (theory/evidence)** —
+25 claims, 0 refuted. **Pass B (real user sentiment + dark-pattern/addiction risk)** — a second
+single deep-research pass (2026-06-20) fetched 18 sources, extracted 80 claims, and verified 25 by
+3-vote refute test (**20 confirmed, 5 refuted, 12 after dedup**); every Part B item now carries a
+quote, community, date, link, and vote in [`gamification-research.md`](./gamification-research.md) §2.
+Evidence labels follow the canonical doc's convention.
 
 ### 1A. Evidence (verified against primary sources)
 
@@ -65,45 +65,49 @@ directional. Evidence labels follow the canonical doc's convention.
 | E11 | **Fogg B=MAP** — behavior needs Motivation + Ability + Prompt to converge; make the action tiny, prompt well, *celebrate* completion. | Practitioner-endorsed / definitional | BJ Fogg, behaviormodel.org |
 | E12 | **Goal-gradient & endowed-progress** effects are real (pre-filled "head start" → faster completion). **⚠️ But these are commercial loyalty mechanics that work via extrinsic pull — in direct tension with E2/E3. Use as autonomy-supportive progress *visualization*, never coercive payoff.** Goal-gradient weakens under low autonomy (Hu et al. 2021). | Confirmed (mechanism) / Reasonable inference (app use) | Kivetz, Urminsky & Zheng, *J. Marketing Research* (2006); Nunes & Drèze, *JCR* (2006) |
 | E13 | **Implementation intentions** ("if-then" plans) raise goal achievement, **d≈0.65** (medium-large). The app already uses this as the `habit_cue`. | Confirmed by research | Gollwitzer & Sheeran (2006) — also cited in the canonical doc |
+| E14 | **Loss aversion / prospect theory** — losses loom ~**2× larger** than equivalent gains; the named *engine* behind streak reluctance / "streak anxiety". **⚠️ Use it only to *understand* why punitive resets hurt — never to engineer loss-pressure** (practitioner content mis-attributes it to corporate blogs; the primary source is Kahneman & Tversky). | Confirmed by research | Kahneman & Tversky, *Econometrica* 47(2):263-291 (1979) |
 
-### 1B. User sentiment & ethical-risk (directional — verification halted)
+### 1B. User sentiment & ethical-risk (VERIFIED — pass 2, 2026-06-20)
+
+Full quotes / links / votes in [`gamification-research.md`](./gamification-research.md) §2 (20 confirmed, 5 refuted).
 
 What users **love** `[User-reported]`:
-- Streaks/visible progress create momentum and identity ("I'm someone who shows up"); the
-  daily "don't break the chain" pull is genuinely motivating *while it lasts*.
+- Visible progress/streaks create momentum and identity ("I'm someone who shows up") — motivating *while they last*.
 - Celebration / competence feedback feels good; badges that mark *real* milestones are valued.
-- Cooperative/social accountability (a buddy who shows up too) builds belonging.
+- *Caveat:* the "cooperative buddy builds belonging" love is **under-evidenced** — the verified positive buddy
+  signal was weak/partly refuted; the negative (obligation/guilt) was strong. Our buddy design is a bet, not a proven win.
 
-What users **hate** — the **failure modes to design AROUND** `[User-reported / Practitioner-endorsed]`:
-- **F1 — Streak anxiety & loss-rage.** Long streaks become a source of dread; breaking one
-  (often to a bug, timezone, or one busy day) produces grief and "why bother now" abandonment.
-  *Sources fetched:* Decision Lab "Streak-creep" (2024); networkcultures.org "Baby please don't
-  break the streak" (2026-01-19); Smashing Magazine "Designing a Streak System" (2026-02).
-- **F2 — The streak replaces the goal.** People optimize for *the number*, doing the minimum /
-  gaming it, learning nothing. *Sources:* dev.to "Duolingo's shallow learning trap"; Medium
-  "How Duolingo makes me feel guilty (and why that works)".
-- **F3 — Guilt & manufactured obligation**, esp. social streaks (Snapchat) — they become a chore
-  and a social *debt*, not a relationship. *Sources:* screenwiseapp "Snapchat streaks & social
-  obligation"; evolvetreatment "Snapchat streaks & addicted teens".
-- **F4 — Leaderboard toxicity:** cheating/bots, demotion/relegation anxiety, sandbagging,
-  stress; competition-only ranking demotivates the middle and bottom.
-- **F5 — Pay-to-restore-streak resentment.** Paywalling streak repair / freezes reads as
-  manipulation and breeds distrust.
-- **F6 — Notification spam & manufactured urgency** ("your streak ends in 2 hours!") — classic
-  dark patterns (Brignull / *deceptive.design*; UX Mag "Gamification or Manipulation"; Wikipedia
-  "Dark pattern"). Reads as coercive (violates E3).
-- **F7 — ADHD / variable-life users** punished by rigid daily streaks; all-or-nothing resets are
-  especially harmful. *Source:* helloklarity "Why streak features fail ADHD users".
-- **F8 — Variable-ratio reward risk.** Unpredictable/random rewards (Skinner-box loot) drive
-  compulsion. *Avoid entirely* — we give **deterministic** competence feedback, never random payoffs.
+The **failure modes to design AROUND** (verdict after verification):
+- **F1 — Streak anxiety & guilt.** *Confirmed* (a named user paid $9.99×2 to restore — "I am nothing without my
+  streak"); engine = loss aversion (E14). **But "users abandon the app after a break" was REFUTED 0-3 — we don't design from it.**
+- **F2 — The streak replaces the goal.** *Now the top, research-confirmed mode* (Silverman & Barasch, *JCR* 2023)
+  plus a gaming / "cheese the streak" sub-mode. We answer it by rewarding *depth* (real milestones), never a number.
+- **F3 — Guilt & manufactured social obligation.** *Confirmed* — Snapchat empty-maintenance (peer-reviewed) +
+  TinyAct mutual-loss + "streak sitters."
+- **F4 — Leaderboard toxicity / stress.** *Confirmed* that league competition stresses users (Duolingo concedes
+  "too intense") and its opt-out is **not granular**; cheating/sandbagging specifics stay user-reported. (The "+25%" engagement figure is unsourced.)
+- **F5 — Pay-to-restore resentment.** *Confirmed* (paying to restore) + currency-confusion dark pattern. Our
+  derive-everything freezes are **structurally impossible to paywall.**
+- **F6 — Notification urgency / dark patterns.** *Confirmed* — confirmshaming + currency confusion are canonical
+  patterns (Brignull / *deceptive.design*; Gray et al., CHI 2018).
+- **F7 — ADHD / variable-life harm.** *Medium* — the mechanism (perfectionism / all-or-nothing) is confirmed;
+  the ADHD-specific abandonment step rests on commercial blogs, no RCT.
+- **F8 — Variable-ratio reward risk.** Evidence **downgraded to Reasonable inference** (no surviving primary
+  claim) — but we keep the rule: **deterministic** competence feedback, never random payoffs.
+- **F9 — Mutual-loss / group-reset social streaks (NEW).** TinyAct's "if one skips, both lose the streak"
+  anti-pattern. **Our buddy streak explicitly avoids it** (a gap never resets either solo streak or "lets anyone down"; either party can end it).
 
 ### 1C. Where evidence and sentiment AGREE / DISAGREE
 - **Agree:** Forgiving streaks (E10 ↔ F1/F7), celebration over punishment (E4 ↔ F1), cooperation
   over pure competition (E7 ↔ F4), no manipulation/urgency (E3 ↔ F6).
-- **Disagree / tension:** Loss-aversion streak pressure and goal-gradient countdowns *increase
-  short-term engagement* (commercially proven, E12) but *erode intrinsic motivation* (E2/E3) and
-  *anger users* (F1/F5/F6). **We resolve this in favor of intrinsic motivation + trust:** progress
-  is *shown*, never *threatened*; nothing is ever paywalled.
+- **Sentiment sharpens, not contradicts, the theory.** Its sharpest point: **Lally 2010 (a single
+  missed day does not derail habit formation, E10) directly contradicts the punitive reset-to-zero
+  of Duolingo/Snapchat/TinyAct — that reset is a *manufactured* loss with no basis in habit science.**
+  This is the core ethical critique and the strongest validation of our forgiving streak + earned freeze.
+- **Disagree / tension:** Loss aversion (**E14**) is the engine that makes streak pressure and
+  goal-gradient countdowns *increase short-term engagement* (E12) — but weaponizing it *erodes intrinsic
+  motivation* (E2/E3) and *angers users* (F1/F5/F6). **We resolve in favor of intrinsic motivation +
+  trust:** progress is *shown*, never *threatened*; nothing is paywalled; no mutual-loss social streaks.
 
 ---
 
@@ -165,7 +169,9 @@ and (b) doing nothing (leaves the verified competence/relatedness levers unused)
    up"), **no guilt/debt language**, and either party can end it anytime (answers F3). A buddy can read
    only the *dates* the other completed (via the `buddy_completion_dates` SECURITY DEFINER function,
    gated on an accepted connection) — **never** journal content. Builds relatedness (E7) without
-   Snapchat-style obligation.
+   Snapchat-style obligation. **No mutual-loss:** one person's gap never resets the other's streak or the
+   shared count — the explicit opposite of the verified TinyAct anti-pattern (F9). *Net relatedness benefit
+   of even a healthy buddy streak is empirically unverified (research §5) — this is a design bet to validate with users.*
 
 ---
 
@@ -335,12 +341,19 @@ freeze + reviewer badges; phases 1–5 → progressive badge unlocks mirroring e
 ---
 
 ## 6. Open questions / what couldn't be verified
-- **Part B sentiment was not fully verified** (research halted to conserve budget). The failure modes
-  (F1–F8) are directionally well-supported by fetched sources but not adversarially confirmed quote-by-quote.
-- **Optimal forgiving policy beyond a single miss** is unverified — Lally (2010) tested *single* misses
-  only. Freeze cap (2) and "1 per weekly review" are reasonable inferences, tunable.
-- **Buddy streaks: relatedness vs guilt** — net effect on *this* audience is an open empirical question;
-  mitigated by cooperative framing + easy pause + default-off, but should be validated with users.
+- ~~**Part B sentiment was not fully verified**~~ — **DONE.** Pass 2 (2026-06-20) verified F1–F9
+  quote-by-quote (20 confirmed, 5 refuted); see [`gamification-research.md`](./gamification-research.md) §2.
+  Five claims were *refuted* — notably "users abandon the app after a streak breaks" (0-3).
+- **Net effect of a *healthy* (no-mutual-loss) buddy streak is unverified** — the verified evidence only
+  covers mutual-loss (TinyAct) and reciprocal-obligation (Snapchat) designs; SDT (E7) predicts a relatedness
+  benefit the sentiment neither confirms nor refutes. Mitigated by cooperative framing + easy end + default-off,
+  but **validate with users** — it is the design's main empirical bet.
+- **Optimal forgiving policy beyond a single miss** is unverified — Lally (2010) tested *single* misses only;
+  no study compares grace-mechanism variants (freeze vs grace-window vs decay). Freeze cap (2) and "1 per weekly
+  review" are reasonable inferences, tunable.
+- **Streak-gaming prevalence** (minimum-effort reps vs genuine engagement) is unmeasured — sizes how often F2 bites at scale.
+- **Variable-ratio/Skinner compulsion specifically in habit apps** has no primary evidence (F8 downgraded); the
+  rule "deterministic feedback, never random payoffs" stands as a precaution.
 - **CP point weights** are a product decision (proposed values are placeholders to calibrate so the
   number reflects effort, not gameable volume).
 - **Leaderboard cohorting** (global vs small groups) — small cohorts reduce F4 toxicity; needs a sizing rule.

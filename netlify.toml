@@ -1,0 +1,26 @@
+# Netlify configuration — 66-Day System (Next.js 16 App Router, server-rendered).
+#
+# This app is NOT a static site: proxy.ts (middleware) does auth gating, and it
+# uses Server Components, Server Actions, and a route handler. Netlify must run
+# the build itself so its Next.js Runtime can extract the serverless/edge
+# functions — a manual folder upload cannot do that.
+
+[build]
+  command = "npm run build"
+
+[build.environment]
+  # Next.js 16 requires a modern Node. Pin it so prod matches local.
+  NODE_VERSION = "20"
+  # NEXT_PUBLIC_* values are inlined into the browser bundle by design — the
+  # Supabase URL + publishable key are MEANT to be public (Row Level Security
+  # protects the data). Netlify's secret scanner can't know that and fails the
+  # build when it finds them in the output, so we exempt these two keys.
+  # Everything else is still scanned, so a real leak (e.g. the DB password)
+  # would still fail the build.
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+
+# Netlify's Next.js Runtime: handles SSR, Server Actions, Route Handlers, and
+# the proxy/middleware via serverless + edge functions. Netlify usually
+# auto-installs this; declaring it explicitly avoids detection gaps.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

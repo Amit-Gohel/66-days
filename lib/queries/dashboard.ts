@@ -94,7 +94,7 @@ export async function getDashboard(): Promise<Dashboard> {
     freezesAvailable: freezesLeft,
     cue: profile?.habit_cue ?? "After I brush my teeth",
     email: user?.email ?? "",
-    theme: profile?.theme ?? "dark",
+    theme: profile?.theme ?? "light",
     todayISO,
   };
 

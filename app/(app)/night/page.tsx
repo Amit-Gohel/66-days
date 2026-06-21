@@ -1,7 +1,6 @@
-import { getNightData } from "@/lib/queries/night";
-import { NightSessionFlow } from "@/components/night/NightSessionFlow";
+import { redirect } from "next/navigation";
 
-export default async function NightPage() {
-  const data = await getNightData();
-  return <NightSessionFlow data={data} />;
+// The night session is now merged into the Today page ("Tonight's review").
+export default function NightPage() {
+  redirect("/home");
 }

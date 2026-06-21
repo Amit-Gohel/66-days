@@ -10,21 +10,29 @@ export interface NavItem {
   href: string;
 }
 
+// Simplified, first-timer IA (the redesign): three places, like sections of one book.
+// Everything advanced (predictions, calibration, ideas, weekly, reading, roadmap, the
+// cohort/buddy "Look back") is folded away — reachable from the calendar or Settings,
+// never crowding the daily writing surface.
 export const NAV: NavItem[] = [
-  { id: "home", label: "Home", icon: "home", href: "/home" },
-  { id: "night", label: "Night", icon: "moon", href: "/night" },
-  { id: "weekly", label: "Weekly", icon: "calendar", href: "/weekly" },
-  { id: "predictions", label: "Predictions", icon: "list", href: "/predictions" },
-  { id: "calibration", label: "Calibration", icon: "target", href: "/calibration" },
-  { id: "ideas", label: "Ideas", icon: "lightbulb", href: "/ideas" },
-  { id: "archive", label: "Archive", icon: "archive", href: "/archive" },
-  { id: "reading", label: "Reading", icon: "book", href: "/reading" },
-  { id: "roadmap", label: "Roadmap", icon: "map", href: "/roadmap" },
-  { id: "leaderboard", label: "Cohort", icon: "award", href: "/leaderboard" },
+  { id: "today", label: "Today", icon: "feather", href: "/home" },
+  { id: "calendar", label: "The 66 Days", icon: "grid", href: "/archive" },
   { id: "settings", label: "Settings", icon: "settings", href: "/settings" },
 ];
 
-export const MOBILE_NAV = ["home", "night", "calibration", "archive", "settings"];
+export const MOBILE_NAV = ["today", "calendar", "settings"];
+
+// Deeper, less-frequent surfaces — kept out of the primary path so a first-timer
+// isn't overwhelmed, but listed under a quiet "More" group so nothing is forgotten.
+export const NAV_MORE: NavItem[] = [
+  { id: "predictions", label: "Predictions", icon: "list", href: "/predictions" },
+  { id: "calibration", label: "Calibration", icon: "target", href: "/calibration" },
+  { id: "ideas", label: "Ideas", icon: "lightbulb", href: "/ideas" },
+  { id: "weekly", label: "Weekly review", icon: "calendar", href: "/weekly" },
+  { id: "reading", label: "Reading", icon: "book", href: "/reading" },
+  { id: "roadmap", label: "Roadmap", icon: "map", href: "/roadmap" },
+  { id: "lookback", label: "Look back", icon: "award", href: "/look-back" },
+];
 
 export interface Phase {
   n: number;

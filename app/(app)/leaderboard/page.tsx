@@ -1,7 +1,6 @@
-import { getLeaderboard, getBuddies } from "@/lib/queries/social";
-import { CohortView } from "@/components/social/CohortView";
+import { redirect } from "next/navigation";
 
-export default async function LeaderboardPage() {
-  const [leaderboard, buddies] = await Promise.all([getLeaderboard(), getBuddies()]);
-  return <CohortView leaderboard={leaderboard} buddies={buddies} />;
+// The cohort + buddy features now live in the folded "Look back" area.
+export default function LeaderboardPage() {
+  redirect("/look-back");
 }

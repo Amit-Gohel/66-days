@@ -15,7 +15,7 @@ export default async function AppLayout({
   if (!profile || !profile.onboarding_completed) redirect("/onboarding");
 
   return (
-    <ThemeProvider initial={profile.theme}>
+    <ThemeProvider initial={profile.theme ?? "light"}>
       <AppShell>{children}</AppShell>
     </ThemeProvider>
   );

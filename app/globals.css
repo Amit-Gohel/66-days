@@ -13,8 +13,8 @@
   --surface-2: #e2d7bd;
   --border: #cbbd9c;
   --text: #2e2620;
-  --text-2: #685d4d;
-  --text-3: #8a7e66;
+  --text-2: #5c5141;
+  --text-3: #6b5f47;
   --accent: #9a6b34;
   --accent-hover: #855a29;
   --warn: #8a4a3c;
@@ -53,8 +53,8 @@
   --surface-2: #2e271e;
   --border: #3c352a;
   --text: #ece4d4;
-  --text-2: #a59c8a;
-  --text-3: #6f6757;
+  --text-2: #b3a994;
+  --text-3: #8a8169;
   --accent: #d4a574;
   --accent-hover: #c49860;
   --warn: #704339;
@@ -276,6 +276,27 @@ input:focus {
   }
   .anim-ink {
     animation: inkSettle 200ms ease-out both;
+  }
+}
+
+/* ============ TODAY LAYOUT (wide two-column on desktop) ============ */
+.today-grid {
+  display: block;
+}
+.today-rail {
+  margin-top: 36px;
+}
+@media (min-width: 1024px) {
+  .today-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 40px;
+    align-items: start;
+  }
+  .today-rail {
+    margin-top: 0;
+    position: sticky;
+    top: 24px;
   }
 }
 

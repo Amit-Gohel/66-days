@@ -54,10 +54,10 @@ const fontVars = [
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  // Default to the locked "operator night" dark look; ThemeProvider (M6) will
-  // hydrate the user's stored preference. The /night route forces dark regardless.
+  // Default to the warm "aged paper" look (the redesign default); ThemeProvider
+  // hydrates the user's stored preference. "Tonight's review" stays lamplit regardless.
   return (
-    <html lang="en" data-theme="night" className={fontVars}>
+    <html lang="en" data-theme="day" className={fontVars}>
       <body className="grain vignette">{children}</body>
     </html>
   );

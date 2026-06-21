@@ -128,6 +128,23 @@ const PATHS: Record<string, ReactNode> = {
       <path d="M3 3v5h5" />
     </>
   ),
+  // scissors = cull an idea; star = mark a Top-3 finalist; wand = develop (SCAMPER)
+  scissors: (
+    <>
+      <circle cx="6" cy="6" r="2.6" />
+      <circle cx="6" cy="18" r="2.6" />
+      <path d="M8.4 7.6 20 18M8.4 16.4 20 6" />
+    </>
+  ),
+  star: (
+    <path d="M12 3l2.7 5.5 6 .9-4.35 4.2 1.03 6L12 17.8 6.62 19.6l1.03-6L3.3 9.4l6-.9L12 3Z" />
+  ),
+  wand: (
+    <>
+      <path d="M4 20 15 9" />
+      <path d="M13 4.5l.9 2 2 .9-2 .9-.9 2-.9-2-2-.9 2-.9.9-2Z" />
+    </>
+  ),
 };
 
 export interface IconProps {

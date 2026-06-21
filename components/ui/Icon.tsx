@@ -115,6 +115,19 @@ const PATHS: Record<string, ReactNode> = {
       <path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5" />
     </>
   ),
+  // trash = delete a prediction; rotateCcw = undo/reopen glyph (kept for reuse)
+  trash: (
+    <>
+      <path d="M4 7h16M10 11v6M14 11v6" />
+      <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" />
+    </>
+  ),
+  rotateCcw: (
+    <>
+      <path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.4 2.7L3 8" />
+      <path d="M3 3v5h5" />
+    </>
+  ),
 };
 
 export interface IconProps {
